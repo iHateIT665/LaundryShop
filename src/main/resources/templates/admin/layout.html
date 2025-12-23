@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:fragment="layout(content, activeItem, title)">
+<head th:replace="~{common/head :: head(${title})}"></head>
+<body>
+
+<div class="d-flex" style="min-height: 100vh;">
+    <div th:replace="~{admin/fragments/sidebar :: sidebar(${activeItem})}"></div>
+
+    <div class="d-flex flex-column flex-grow-1">
+        <div th:replace="~{admin/fragments/header :: header}"></div>
+
+        <div class="flex-grow-1 p-4 bg-light">
+            <div th:replace="${content}"></div>
+        </div>
+
+        <div th:replace="~{admin/fragments/footer :: footer}"></div>
+    </div>
+</div>
+
+<div th:replace="~{common/scripts :: scripts}"></div>
+
+</body>
+</html>

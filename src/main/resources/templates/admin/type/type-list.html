@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{admin/layout :: layout(~{:: .main-content}, 'types', 'Quản Lý Loại Đồ')}">
+<body>
+    <div class="main-content">
+        <h2 class="mb-4">Danh Sách Loại Đồ Giặt</h2>
+        <a th:href="@{/admin/types/add}" class="btn btn-primary mb-3 shadow-sm">
+            <i class="fa-solid fa-plus-circle"></i> Thêm Loại Đồ Mới
+        </a>
+
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-0">
+                <table class="table table-striped table-hover mb-0 align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th class="ps-3">ID</th>
+                            <th>Hình Ảnh</th>
+                            <th>Tên Loại Đồ</th>
+                            <th>Phân Khúc</th>
+                            <th class="text-center">Hành Động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="t : ${types}">
+                            <td class="ps-3" th:text="${t.typeId}"></td>
+                            <td>
+                                <img th:src="@{${t.imagePath}}" class="rounded border shadow-sm"
+                                    style="width: 60px; height: 60px; object-fit: cover;" alt="Type Img">
+                            </td>
+                            <td th:text="${t.typeName}" class="fw-bold"></td>
+                            <td>
+                                <span th:if="${t.category == 'premium'}" class="badge bg-warning text-dark">Cao Cấp</span>
+                                <span th:if="${t.category == 'normal'}" class="badge bg-secondary">Bình Dân</span>
+                            </td>
+                            <td class="text-center">
+                                <a th:href="@{/admin/types/edit/{id}(id=${t.typeId})}"
+                                    class="btn btn-warning btn-sm mx-1"><i class="fa-solid fa-pen"></i></a>
+                                <a th:href="@{/admin/types/delete/{id}(id=${t.typeId})}"
+                                    class="btn btn-danger btn-sm mx-1"
+                                    onclick="return confirm('Bạn có chắc muốn xóa loại đồ này?');"><i
+                                        class="fa-solid fa-trash"></i></a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

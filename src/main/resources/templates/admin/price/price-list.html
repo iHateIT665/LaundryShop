@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{admin/layout :: layout(~{:: .main-content}, 'prices', 'Quản Lý Bảng Giá')}">
+<body>
+    <div class="main-content">
+        <h2 class="mb-4">Thiết Lập Bảng Giá</h2>
+
+        <div class="card shadow-sm mb-4 border-0">
+            <div class="card-body">
+                <form th:action="@{/admin/prices}" method="get" class="row g-3">
+                    <div class="col-md-9">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+                            <input type="text" name="keyword" class="form-control border-start-0"
+                                placeholder="Nhập tên dịch vụ hoặc tên đồ..." th:value="${param.keyword}">
+                        </div>
+                    </div>
+                    <div class="col-md-3 d-grid">
+                        <button type="submit" class="btn btn-dark">Lọc Bảng Giá</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div th:if="${param.error}" class="alert alert-danger">
+            Lỗi: Dịch vụ và Loại đồ này đã có giá rồi!
+        </div>
+
+        <a th:href="@{/admin/prices/add}" class="btn btn-primary mb-3 shadow-sm">
+            <i class="fa-solid fa-plus-circle"></i> Thêm Giá Mới
+        </a>
+
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-0">
+                <table class="table table-striped table-hover mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th class="ps-3">ID</th>
+                            <th>Dịch Vụ</th>
+                            <th>Loại Đồ</th>
+                            <th>Đơn Giá</th>
+                            <th>Đơn Vị</th>
+                            <th class="text-center">Hành Động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="p : ${prices}">
+                            <td class="ps-3" th:text="${p.priceId}"></td>
+                            <td th:text="${p.service.serviceName}" class="fw-bold text-primary"></td>
+                            <td th:text="${p.clothingType.typeName}"></td>
+                            <td th:text="${#numbers.formatDecimal(p.price, 0, 'COMMA', 0, 'POINT')} + ' đ'"
+                                class="fw-bold text-success"></td>
+                            <td th:text="${p.unit}"></td>
+                            <td class="text-center">
+                                <a th:href="@{/admin/prices/edit/{id}(id=${p.priceId})}"
+                                    class="btn btn-warning btn-sm mx-1"><i class="fa-solid fa-pen"></i></a>
+                                <a th:href="@{/admin/prices/delete/{id}(id=${p.priceId})}"
+                                    class="btn btn-danger btn-sm mx-1"
+                                    onclick="return confirm('Xóa giá này?');"><i class="fa-solid fa-trash"></i></a>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(prices)}">
+                            <td colspan="6" class="text-center py-4 text-muted">Không tìm thấy bảng giá nào.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

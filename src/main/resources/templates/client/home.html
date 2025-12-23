@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{common/head :: head('Trang Chủ')}"></head>
+<body>
+
+    <nav th:replace="~{client/fragments/navbar :: navbar}"></nav>
+
+    <div class="bg-light py-5 mb-5 border-bottom">
+        <div class="container text-center">
+            <h1 class="display-5 fw-bold text-primary mb-3">Giặt Ủi Thông Minh 4.0</h1>
+            <p class="lead mb-4">Giao nhận tận nơi - Sạch thơm như mới - Chỉ với 1 cú click</p>
+            
+            <div sec:authorize="hasRole('CLIENT')"> 
+                <a th:href="@{/client/booking}" class="btn btn-success btn-lg px-5 py-3 shadow text-uppercase fw-bold">
+                    <i class="fa-solid fa-plus-circle me-2"></i> Đặt Lịch Giặt Ngay
+                </a>
+            </div>
+            
+             <div sec:authorize="!isAuthenticated()">
+                 <a th:href="@{/register}" class="btn btn-primary btn-lg px-5">Đăng Ký Thành Viên Ngay</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mb-5">
+        <h3 class="text-center mb-4 fw-bold text-secondary">DỊCH VỤ NỔI BẬT</h3>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm text-center p-4 hover-effect">
+                    <i class="fa-solid fa-shirt fa-3x text-info mb-3"></i>
+                    <h4>Giặt Sấy</h4>
+                    <p class="text-muted">Giặt sạch, sấy khô, gấp gọn. Phù hợp quần áo hàng ngày.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm text-center p-4 hover-effect">
+                    <i class="fa-solid fa-vest fa-3x text-warning mb-3"></i>
+                    <h4>Giặt Hấp (Khô)</h4>
+                    <p class="text-muted">Chăm sóc đặc biệt cho Vest, Váy dạ hội, đồ hiệu cao cấp.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm text-center p-4 hover-effect">
+                    <i class="fa-solid fa-shoe-prints fa-3x text-success mb-3"></i>
+                    <h4>Vệ Sinh Giày</h4>
+                    <p class="text-muted">Làm sạch sâu, khử mùi, hong khô bằng máy chuyên dụng.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{common/scripts :: scripts}"></div>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      th:replace="~{admin/layout :: layout(~{:: .main-content}, 'dashboard', 'Tổng Quan')}">
+<body>
+    <div class="main-content">
+        <h2 class="mb-4 fw-bold">Tổng Quan Hệ Thống</h2>
+
+        <div class="row g-4 mb-4">
+            <div class="col-md-3">
+                <div class="card shadow-sm border-0 border-start border-success border-4 h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted text-uppercase mb-1">Doanh Thu Thực Tế</h6>
+                                <h3 class="fw-bold text-success mb-0" th:text="${#numbers.formatDecimal(revenue, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</h3>
+                            </div>
+                            <div class="bg-success bg-opacity-10 p-3 rounded-circle">
+                                <i class="fa-solid fa-sack-dollar fa-2x text-success"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card shadow-sm border-0 border-start border-primary border-4 h-100">
+                    <div class="card-body">
+                         <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted text-uppercase mb-1">Tổng Đơn Hàng</h6>
+                                <h3 class="fw-bold text-primary mb-0" th:text="${totalOrders}">0</h3>
+                            </div>
+                            <div class="bg-primary bg-opacity-10 p-3 rounded-circle"><i class="fa-solid fa-receipt fa-2x text-primary"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                 <div class="card shadow-sm border-0 border-start border-warning border-4 h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div><h6 class="text-muted text-uppercase mb-1">Đơn Chờ Xử Lý</h6><h3 class="fw-bold text-warning mb-0" th:text="${pendingOrders}">0</h3></div>
+                            <div class="bg-warning bg-opacity-10 p-3 rounded-circle"><i class="fa-solid fa-bell fa-2x text-warning"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                 <div class="card shadow-sm border-0 border-start border-info border-4 h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div><h6 class="text-muted text-uppercase mb-1">Khách Hàng</h6><h3 class="fw-bold text-info mb-0" th:text="${totalCustomers}">0</h3></div>
+                            <div class="bg-info bg-opacity-10 p-3 rounded-circle"><i class="fa-solid fa-users fa-2x text-info"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white py-3"><h5 class="mb-0 fw-bold">Thông Báo Hệ Thống</h5></div>
+            <div class="card-body"><p class="text-muted">Hệ thống đang hoạt động ổn định. Chưa có cảnh báo nào.</p></div>
+        </div>
+    </div>
+</body>
+</html>

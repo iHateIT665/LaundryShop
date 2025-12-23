@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Đăng Nhập</title>
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body class="bg-light">
+
+	<div class="container mt-5">
+		<div class="row justify-content-center">
+			<div class="col-md-5">
+				<div class="card shadow">
+					<div class="card-header bg-success text-white text-center">
+						<h3>ĐĂNG NHẬP</h3>
+					</div>
+					<div class="card-body p-4">
+
+						<div th:if="${param.success}" class="alert alert-success">
+							Đăng ký thành công! Vui lòng đăng nhập.</div>
+
+						<div th:if="${param.error}" class="alert alert-danger">Sai
+							số điện thoại hoặc mật khẩu!</div>
+
+						<div th:if="${param.logout}" class="alert alert-info">Bạn đã
+							đăng xuất thành công.</div>
+
+						<form th:action="@{/do-login}" method="post">
+							<div class="mb-3">
+								<label class="form-label">Số điện thoại</label> <input
+									type="text" name="username" class="form-control" required
+									placeholder="Nhập SĐT">
+							</div>
+
+							<div class="mb-3">
+								<label class="form-label">Mật khẩu</label>
+								<div class="input-group">
+									<input type="password" name="password" class="form-control"
+										id="loginPassword" required placeholder="Nhập mật khẩu">
+
+									<span class="input-group-text"
+										onclick="togglePassword('loginPassword', 'loginIcon')"
+										style="cursor: pointer;"> <i class="fa-solid fa-eye"
+										id="loginIcon"></i>
+									</span>
+								</div>
+							</div>
+
+							<script>
+    function togglePassword(inputId, iconId) {
+        const passwordInput = document.getElementById(inputId);
+        const icon = document.getElementById(iconId);
+
+        if (passwordInput.type === "password") {
+            passwordInput.type = "text"; // Hiện mật khẩu
+            icon.classList.remove("fa-eye");
+            icon.classList.add("fa-eye-slash"); // Đổi icon thành mắt gạch chéo
+        } else {
+            passwordInput.type = "password"; // Ẩn mật khẩu
+            icon.classList.remove("fa-eye-slash");
+            icon.classList.add("fa-eye"); // Đổi lại icon mắt thường
+        }
+    }
+</script>
+
+							<div class="mb-3 form-check">
+								<input type="checkbox" name="remember-me"
+									class="form-check-input" id="rememberCheck"> <label
+									class="form-check-label" for="rememberCheck">Ghi nhớ
+									đăng nhập</label>
+							</div>
+
+							<div class="mb-3 text-end">
+								<a th:href="@{/forgot-password}" class="text-decoration-none">Quên
+									mật khẩu?</a>
+							</div>
+
+							<button type="submit" class="btn btn-success w-100">Đăng
+								Nhập</button>
+						</form>
+					</div>
+					<div class="card-footer text-center">
+						Chưa có tài khoản? <a th:href="@{/register}">Đăng ký mới</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>

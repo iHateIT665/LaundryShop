@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Thông Tin Người Dùng</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+    <div class="container mt-5">
+        <div class="card col-md-6 mx-auto shadow border-0">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0" th:text="${user.userId == null} ? 'Thêm Người Dùng' : 'Cập Nhật Hồ Sơ'"></h3>
+            </div>
+            <div class="card-body p-4">
+                <form th:action="@{/admin/users/save}" th:object="${user}" method="post" enctype="multipart/form-data">
+                    <input type="hidden" th:field="*{userId}">
+                    <div class="text-center mb-3">
+                        <img th:src="@{${user.avatarPath}}" style="width: 100px; height: 100px; object-fit: cover;"
+                            class="rounded-circle border">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Ảnh Đại Diện</label>
+                        <input type="file" name="imageFile" class="form-control" accept="image/png, image/jpeg">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Họ và Tên</label>
+                        <input type="text" th:field="*{fullName}" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Số Điện Thoại</label>
+                        <input type="text" th:field="*{phone}" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3" th:if="${user.userId == null}">
+                        <label class="form-label fw-bold">Mật Khẩu</label>
+                        <input type="password" th:field="*{password}" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Địa Chỉ</label>
+                        <textarea th:field="*{address}" class="form-control" rows="2"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Vai Trò</label>
+                        <select th:field="*{role}" class="form-select">
+                            <option value="CLIENT">Khách Hàng</option>
+                            <option value="STAFF">Nhân Viên</option>
+                            <option value="ADMIN">Quản Trị Viên</option>
+                        </select>
+                    </div>
+
+                    <div class="text-end">
+                        <a th:href="@{/admin/users}" class="btn btn-secondary px-4">Hủy</a>
+                        <button type="submit" class="btn btn-success px-4">Lưu Lại</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

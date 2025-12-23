@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+    <nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark bg-primary mb-4 sticky-top shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" th:href="@{/home}"><i class="fa-solid fa-shirt me-2"></i> LAUNDRY SHOP</a>
+            
+            <div class="ms-auto d-flex align-items-center">
+                <a th:href="@{/home}" class="btn btn-outline-light me-2 border-0"><i class="fa-solid fa-house"></i> Trang Chủ</a>
+                
+                <a th:href="@{/client/cart}" class="btn btn-warning position-relative me-2 fw-bold text-dark">
+                    <i class="fa-solid fa-cart-shopping"></i> Giỏ Hàng
+                    <span th:if="${session.cart != null and !session.cart.isEmpty()}" class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
+                        <span class="visually-hidden">New alerts</span>
+                    </span>
+                </a>
+
+                <div sec:authorize="isAuthenticated()" class="dropdown ms-2">
+                    <button class="btn btn-light dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown">
+                        <img th:src="@{${#authentication.principal.user.avatarPath}}" class="rounded-circle me-2" style="width: 28px; height: 28px; object-fit: cover; border: 1px solid #dee2e6;">
+                        <span sec:authentication="principal.user.fullName" class="fw-bold d-none d-sm-inline">Khách</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                        <li><a class="dropdown-item" th:href="@{/client/history}"><i class="fa-solid fa-receipt me-2 text-primary"></i>Lịch sử đơn hàng</a></li>
+                        <li><a class="dropdown-item" th:href="@{/profile}"><i class="fa-solid fa-user-pen me-2 text-primary"></i>Cập nhật hồ sơ</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" th:href="@{/logout}"><i class="fa-solid fa-right-from-bracket me-2"></i>Đăng xuất</a></li>
+                    </ul>
+                </div>
+
+                <div sec:authorize="!isAuthenticated()" class="ms-2">
+                    <a th:href="@{/login}" class="btn btn-light text-primary fw-bold">Đăng Nhập</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+</body>
+</html>

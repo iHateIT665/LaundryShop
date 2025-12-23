@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <div th:fragment="sidebar(activeItem)" class="sidebar d-flex flex-column flex-shrink-0 p-3 text-white" style="width: 280px;">
+        <a th:href="@{/admin/dashboard}" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+            <span class="fs-4 fw-bold"><i class="fa-solid fa-shirt me-2"></i> Admin Panel</span>
+        </a>
+        <hr>
+        <ul class="nav nav-pills flex-column mb-auto">
+            <li>
+                <a th:href="@{/admin/dashboard}" class="nav-link text-white" th:classappend="${activeItem == 'dashboard'} ? 'active' : ''">
+                    <i class="fa-solid fa-gauge me-2"></i> Tổng Quan
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/admin/services}" class="nav-link text-white" th:classappend="${activeItem == 'services'} ? 'active' : ''">
+                    <i class="fa-solid fa-list me-2"></i> Quản Lý Dịch Vụ
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/admin/users}" class="nav-link text-white" th:classappend="${activeItem == 'users'} ? 'active' : ''">
+                    <i class="fa-solid fa-users me-2"></i> Quản Lý Người Dùng
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/admin/types}" class="nav-link text-white" th:classappend="${activeItem == 'types'} ? 'active' : ''">
+                    <i class="fa-solid fa-tags me-2"></i> Quản Lý Loại Đồ
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/admin/prices}" class="nav-link text-white" th:classappend="${activeItem == 'prices'} ? 'active' : ''">
+                    <i class="fa-solid fa-money-bill-wave me-2"></i> Quản Lý Bảng Giá
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/admin/orders}" class="nav-link text-white" th:classappend="${activeItem == 'orders'} ? 'active' : ''">
+                    <i class="fa-solid fa-receipt me-2"></i> Quản Lý Đơn Hàng
+                </a>
+            </li>
+        </ul>
+        <hr>
+    </div>
+</body>
+</html>

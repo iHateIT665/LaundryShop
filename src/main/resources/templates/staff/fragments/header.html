@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <nav th:fragment="header(staffName)" class="navbar navbar-dark bg-success mb-3 shadow-sm sticky-top">
+        <div class="container">
+            <div class="d-flex align-items-center">
+                <a th:href="@{/staff/home}" class="btn btn-sm btn-outline-light me-3 border-0">
+                    <i class="fa-solid fa-arrow-left fa-lg"></i>
+                </a>
+                
+                <span class="navbar-brand mb-0 h1">
+                    <i class="fa-solid fa-truck-fast me-2"></i> Hello, <span th:text="${staffName}"></span>
+                </span>
+            </div>
+            <a th:href="@{/logout}" class="btn btn-sm btn-light text-success fw-bold">
+                <i class="fa-solid fa-right-from-bracket"></i> <span class="d-none d-sm-inline">Đăng xuất</span>
+            </a>
+        </div>
+    </nav>
+</body>
+</html>

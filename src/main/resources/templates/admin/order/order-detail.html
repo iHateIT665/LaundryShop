@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{admin/layout :: layout(~{:: .main-content}, 'orders', 'Chi Tiết Đơn Hàng')}">
+<body>
+    <div class="main-content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0">
+                Chi Tiết Đơn Hàng <span class="text-primary" th:text="'#' + ${order.orderId}"></span>
+            </h2>
+            <a th:href="@{/admin/orders}" class="btn btn-secondary">
+                <i class="fa-solid fa-arrow-left me-2"></i> Quay Lại
+            </a>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8 mb-4">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="mb-0 text-secondary"><i class="fa-solid fa-shirt me-2"></i> Danh Sách Đồ Giặt</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <table class="table table-hover mb-0 align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-4">Dịch Vụ / Loại Đồ</th>
+                                    <th class="text-center">Số Lượng</th>
+                                    <th class="text-end pe-4">Thành Tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="detail : ${order.orderDetails}">
+                                    <td class="ps-4">
+                                        <div class="fw-bold" th:text="${detail.priceList.service.serviceName}"></div>
+                                        <small class="text-muted" th:text="${detail.priceList.clothingType.typeName}"></small>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="fw-bold" th:text="${detail.quantity}"></span>
+                                        <span class="text-muted small" th:text="${detail.priceList.unit}"></span>
+                                    </td>
+                                    <td class="text-end pe-4 fw-bold"
+                                        th:text="${#numbers.formatDecimal(detail.subtotal, 0, 'COMMA', 0, 'POINT')} + ' đ'">
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot class="table-light">
+                                <tr>
+                                    <td colspan="2" class="text-end fw-bold pt-3">Tổng Cộng:</td>
+                                    <td class="text-end pe-4 fw-bold text-danger fs-5 pt-3"
+                                        th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' đ'">
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 mb-4">
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="mb-0 text-secondary"><i class="fa-solid fa-user me-2"></i> Khách Hàng</h5>
+                    </div>
+                    <div class="card-body text-center pt-4">
+                        <img th:src="@{${order.customer.avatarPath}}"
+                            class="rounded-circle border border-3 border-white shadow mb-3"
+                            style="width: 100px; height: 100px; object-fit: cover;" alt="Customer Avatar">
+
+                        <h5 class="fw-bold mb-1" th:text="${order.customer.fullName}"></h5>
+                        <p class="text-muted mb-3"><i class="fa-solid fa-phone me-1"></i> <span
+                                th:text="${order.customer.phone}"></span></p>
+
+                        <hr class="mx-4">
+                        <div class="text-start px-3">
+                            <p class="mb-2"><strong><i class="fa-solid fa-location-dot me-2 text-primary"></i> Địa chỉ nhận:</strong></p>
+                            <p class="text-muted ms-4 small" th:text="${order.pickupAddress}"></p>
+                            <p class="mb-2"><strong><i class="fa-solid fa-truck me-2 text-success"></i> Địa chỉ giao:</strong></p>
+                            <p class="text-muted ms-4 small" th:text="${order.deliveryAddress}"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="mb-0 text-secondary"><i class="fa-solid fa-info-circle me-2"></i> Trạng Thái</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="fw-bold mb-1">Trạng thái hiện tại:</label>
+                            <div>
+                                <span th:if="${order.status == 'PENDING'}" class="badge bg-warning text-dark w-100 py-2">Chờ Duyệt</span>
+                                <span th:if="${order.status == 'CONFIRMED'}" class="badge bg-primary w-100 py-2">Đã Duyệt</span>
+                                <span th:if="${order.status == 'PROCESSING'}" class="badge bg-info w-100 py-2">Đang Xử Lý</span>
+                                <span th:if="${order.status == 'COMPLETED'}" class="badge bg-success w-100 py-2">Hoàn Thành</span>
+                                <span th:if="${order.status == 'CANCELLED'}" class="badge bg-danger w-100 py-2">Đã Hủy</span>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="fw-bold mb-1">Ngày đặt hàng:</label>
+                            <div class="text-muted" th:text="${#temporals.format(order.createdAt, 'dd-MM-yyyy HH:mm:ss')}"></div>
+                        </div>
+                        <div th:if="${order.status == 'PENDING'}" class="d-grid gap-2">
+                            <a th:href="@{/admin/orders/confirm/{id}(id=${order.orderId})}" class="btn btn-primary">
+                                <i class="fa-solid fa-check me-2"></i> Duyệt Đơn
+                            </a>
+                            <a th:href="@{/admin/orders/cancel/{id}(id=${order.orderId})}"
+                                class="btn btn-outline-danger" onclick="return confirm('Hủy đơn hàng này?')">
+                                <i class="fa-solid fa-xmark me-2"></i> Hủy Đơn
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

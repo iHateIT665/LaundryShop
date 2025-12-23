@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+    <nav th:fragment="header" class="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-4 py-3 mb-4">
+        <div class="container-fluid">
+            <h5 class="m-0 text-secondary">Hệ Thống Quản Lý Giặt Ủi</h5>
+            <div class="ms-auto d-flex align-items-center">
+                <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center text-dark" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown">
+                            <img th:src="@{${#authentication.principal.user.avatarPath}}" class="rounded-circle border" style="width: 32px; height: 32px; object-fit: cover;">
+                            <span class="d-none d-lg-inline fw-bold small ms-2" sec:authentication="principal.user.fullName">Admin</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                            <li><a class="dropdown-item" th:href="@{/profile}"><i class="fa-regular fa-id-card me-2"></i> Hồ sơ cá nhân</a></li>
+                            <li><hr class="dropdown-divider" /></li>
+                            <li><a class="dropdown-item text-danger" th:href="@{/logout}"><i class="fa-solid fa-right-from-bracket me-2"></i> Đăng xuất</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</body>
+</html>

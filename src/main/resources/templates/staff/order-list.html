@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{common/head :: head('Danh Sách Giao Hàng')}"></head>
+<body class="bg-light">
+
+    <nav th:replace="~{staff/fragments/header :: header(${staffName})}"></nav>
+
+    <div class="container pb-5">
+        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+            <h4 class="text-secondary mb-0">Danh Sách Cần Giao</h4>
+            <span class="badge bg-primary rounded-pill" th:text="${#lists.size(orders)} + ' đơn'">0 đơn</span>
+        </div>
+
+        <div th:if="${#lists.isEmpty(orders)}" class="alert alert-info text-center py-5">
+            <i class="fa-solid fa-mug-hot fa-3x mb-3 text-info opacity-50"></i>
+            <p class="mb-0">Hiện tại bạn chưa được phân công đơn hàng nào.</p>
+            <a th:href="@{/staff/home}" class="btn btn-outline-primary mt-3">Về Trang Chủ</a>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-md-6 col-lg-4" th:each="o : ${orders}">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <span class="fw-bold text-primary">#<span th:text="${o.orderId}"></span></span>
+                        <span th:text="${#temporals.format(o.createdAt, 'dd/MM HH:mm')}" class="text-muted small"></span>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <h5 class="card-title mb-1" th:text="${o.customer.fullName}"></h5>
+                            <p class="card-text text-muted mb-1">
+                                <i class="fa-solid fa-phone me-2"></i> <a th:href="'tel:' + ${o.customer.phone}" class="text-decoration-none fw-bold" th:text="${o.customer.phone}"></a>
+                            </p>
+                            <p class="card-text text-danger fw-bold bg-light p-2 rounded">
+                                <i class="fa-solid fa-location-dot me-2"></i> <span th:text="${o.deliveryAddress}"></span>
+                            </p>
+                        </div>
+                        <div class="d-flex justify-content-between border-top pt-2 mb-3">
+                            <span>Thu hộ (COD):</span>
+                            <span class="fw-bold text-success fs-5" th:text="${#numbers.formatDecimal(o.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' đ'"></span>
+                        </div>
+                        <form th:action="@{/staff/orders/update}" method="post">
+                            <input type="hidden" name="orderId" th:value="${o.orderId}">
+                            <div class="input-group">
+                                <select name="status" class="form-select" th:classappend="${o.status == 'COMPLETED'} ? 'bg-success text-white fw-bold' : ''">
+                                    <option value="PROCESSING" th:selected="${o.status == 'PROCESSING'}">🕒 Đang xử lý</option>
+                                    <option value="SHIPPING" th:selected="${o.status == 'SHIPPING'}">🚚 Đang giao hàng</option>
+                                    <option value="COMPLETED" th:selected="${o.status == 'COMPLETED'}">✅ Đã giao xong</option>
+                                    <option value="CANCELLED" th:selected="${o.status == 'CANCELLED'}">❌ Khách hủy / Bom</option>
+                                </select>
+                                <button type="submit" class="btn btn-outline-secondary">Lưu</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{common/scripts :: scripts}"></div>
+</body>
+</html>
