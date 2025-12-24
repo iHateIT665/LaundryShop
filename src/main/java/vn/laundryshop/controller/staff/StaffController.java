@@ -20,18 +20,16 @@ public class StaffController {
     private final IOrderRepository orderRepo;
     private final IUserRepository userRepo;
 
-    // 👇 1. TRANG CHỦ (DASHBOARD) CHO STAFF
     @GetMapping("/home")
     public String staffHome(Model model, Principal principal) {
         String phone = principal.getName();
         User staff = userRepo.findByPhone(phone).orElseThrow();
 
-        // Lấy tất cả đơn hàng của staff này
-        List<Order> allTasks = orderRepo.findByDeliveryStaffOrderByCreatedAtDesc(staff);
+        // SỬA: Dùng findByStaff... chuẩn chỉ
+        List<Order> allTasks = orderRepo.findByStaffOrderByCreatedAtDesc(staff);
 
-        // Tính toán thống kê nhanh (bằng Java Stream cho gọn)
         long pendingCount = allTasks.stream()
-                .filter(o -> "SHIPPING".equals(o.getStatus()) || "PROCESSING".equals(o.getStatus()))
+                .filter(o -> ! "COMPLETED".equals(o.getStatus()) && ! "CANCELLED".equals(o.getStatus()))
                 .count();
 
         long completedCount = allTasks.stream()
@@ -45,19 +43,20 @@ public class StaffController {
         return "staff/home";
     }
 
-    // 2. XEM DANH SÁCH ĐƠN HÀNG
     @GetMapping("/orders")
     public String myTasks(Model model, Principal principal) {
         String phone = principal.getName();
         User staff = userRepo.findByPhone(phone).orElseThrow();
-        List<Order> myOrders = orderRepo.findByDeliveryStaffOrderByCreatedAtDesc(staff);
+        
+        // SỬA: Dùng findByStaff... chuẩn chỉ
+        List<Order> myOrders = orderRepo.findByStaffOrderByCreatedAtDesc(staff);
         
         model.addAttribute("orders", myOrders);
         model.addAttribute("staffName", staff.getFullName());
         return "staff/order-list";
     }
 
-    // 3. CẬP NHẬT TRẠNG THÁI
+    // Các phần update, help giữ nguyên
     @PostMapping("/orders/update")
     public String updateTaskStatus(@RequestParam Long orderId, @RequestParam String status) {
         Order order = orderRepo.findById(orderId).orElseThrow();
@@ -65,13 +64,12 @@ public class StaffController {
         orderRepo.save(order);
         return "redirect:/staff/orders";
     }
+
     @GetMapping("/help")
     public String helpPage(Model model, Principal principal) {
-        // Lấy thông tin Staff để hiển thị tên trên Navbar (nếu cần)
         String phone = principal.getName();
         User staff = userRepo.findByPhone(phone).orElseThrow();
         model.addAttribute("staff", staff);
-        
         return "staff/help";
     }
 }

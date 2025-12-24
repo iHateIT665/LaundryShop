@@ -1,6 +1,8 @@
 package vn.laundryshop.controller.admin;
 
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -20,8 +22,19 @@ public class ClothingTypeController {
     private final ClothingTypeService typeService;
 
     @GetMapping
-    public String listTypes(Model model) {
-        model.addAttribute("types", typeService.getAllTypes());
+    public String listTypes(Model model,
+                            @RequestParam(defaultValue = "0") int page,
+                            @RequestParam(required = false) String keyword) {
+        
+        // Lấy dữ liệu phân trang (5 phần tử / trang)
+        Page<ClothingType> pageResult = typeService.getTypesWithPaging(page, 5, keyword);
+        
+        // "types" để hiển thị trong bảng
+        model.addAttribute("types", pageResult.getContent());
+        // "pageData" để dùng trong fragment pagination.html
+        model.addAttribute("pageData", pageResult);
+        model.addAttribute("keyword", keyword);
+        
         return "admin/type/type-list";
     }
 

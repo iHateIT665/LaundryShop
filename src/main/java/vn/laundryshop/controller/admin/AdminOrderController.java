@@ -1,135 +1,86 @@
 package vn.laundryshop.controller.admin;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import vn.laundryshop.entity.*;
-import vn.laundryshop.repository.IOrderRepository;
-import vn.laundryshop.service.IUserService;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import vn.laundryshop.entity.Order;
+import vn.laundryshop.entity.User;
+import vn.laundryshop.repository.IUserRepository;
 import vn.laundryshop.service.impl.OrderService;
-import vn.laundryshop.service.impl.PriceListService;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/admin/orders")
-@RequiredArgsConstructor
 public class AdminOrderController {
 
-    private final OrderService orderService;
-    private final IOrderRepository orderRepo;
-    private final IUserService userService;
-    private final PriceListService priceService;
+    @Autowired
+    private OrderService orderService;
 
-    // 1. DANH SÁCH & TÌM KIẾM
+    @Autowired
+    private IUserRepository userRepository; 
+
+    // --- SỬA HÀM LIST ORDERS ---
     @GetMapping
-    public String listOrders(@RequestParam(required = false) String keyword,
-                             @RequestParam(required = false) String status,
-                             Model model) {
-        List<Order> orders;
-        if ((keyword != null && !keyword.isEmpty()) || (status != null && !status.isEmpty())) {
-            orders = orderRepo.searchOrders(keyword, status);
-        } else {
-            orders = orderService.getAllOrders();
-        }
-        model.addAttribute("orders", orders);
-        return "admin/order/order-list"; // Đã sửa đường dẫn
+    public String listOrders(Model model, @RequestParam(name = "page", defaultValue = "0") int page) {
+        // Gọi hàm phân trang từ Service
+        Page<Order> orderPage = orderService.getAllOrders(page);
+        
+        // Gửi danh sách đơn hàng của trang hiện tại sang View
+        model.addAttribute("orders", orderPage.getContent());
+        
+        // Gửi thông tin trang (để vẽ nút phân trang) sang View
+        model.addAttribute("pageData", orderPage);
+        
+        // Lấy danh sách STAFF để dùng cho Popup giao việc (ở danh sách)
+        List<User> staffList = userRepository.findByRole("STAFF");
+        model.addAttribute("staffList", staffList);
+        
+        // Truyền biến 'module' để Sidebar biết đang active mục nào
+        model.addAttribute("module", "orders");
+        
+        return "admin/order/order-list";
     }
 
-    // 2. CHI TIẾT ĐƠN HÀNG
     @GetMapping("/detail/{id}")
-    public String orderDetail(@PathVariable Long id, Model model) {
-        Order order = orderService.findOrderById(id).orElseThrow();
+    public String viewOrderDetail(@PathVariable("id") Long id, Model model) {
+        Order order = orderService.findOrderById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid order Id:" + id));
         model.addAttribute("order", order);
         
-        List<User> staffs = userService.getAllUsers().stream()
-                                    .filter(u -> "STAFF".equals(u.getRole()))
-                                    .collect(Collectors.toList());
-        model.addAttribute("staffs", staffs);
+        // Lấy danh sách nhân viên để hiện trong dropdown giao việc (ở chi tiết)
+        List<User> staffList = userRepository.findByRole("STAFF");
+        model.addAttribute("staffList", staffList);
         
-        return "admin/order/order-detail"; // Đã sửa đường dẫn
+        return "admin/order/order-detail";
     }
 
-    // 3. CẬP NHẬT TRẠNG THÁI
-    @PostMapping("/update-status")
-    public String updateStatus(@RequestParam Long orderId, 
-                               @RequestParam String status,
-                               @RequestParam(required = false) Long shipperId) {
-        Order order = orderService.findOrderById(orderId).orElseThrow();
-        order.setStatus(status);
-        if (shipperId != null) {
-            User shipper = userService.findById(shipperId).orElse(null);
-            order.setDeliveryStaff(shipper);
+    @PostMapping("/assign")
+    public String assignStaff(@RequestParam("orderId") Long orderId, 
+                              @RequestParam("staffId") Long staffId,
+                              RedirectAttributes ra) {
+        try {
+            orderService.assignStaff(orderId, staffId);
+            ra.addFlashAttribute("message", "Đã giao đơn hàng thành công!");
+        } catch (Exception e) {
+            ra.addFlashAttribute("error", "Có lỗi xảy ra: " + e.getMessage());
         }
-        orderService.save(order);
-        return "redirect:/admin/orders/detail/" + orderId;
-    }
-
-    // 4. HIỂN THỊ FORM TẠO ĐƠN
-    @GetMapping("/add")
-    public String showCreateOrderForm(Model model) {
-        List<User> customers = userService.getAllUsers().stream()
-                .filter(u -> "CUSTOMER".equals(u.getRole()))
-                .collect(Collectors.toList());
-        model.addAttribute("customers", customers);
-        model.addAttribute("prices", priceService.getAllPrices());
         
-        return "admin/order/order-create"; // Đã sửa đường dẫn
-    }
-
-    // 5. XỬ LÝ TẠO ĐƠN (PHẦN QUAN TRỌNG ĐÃ ĐƯỢC KHÔI PHỤC)
-    @PostMapping("/create")
-    public String adminCreateOrder(@RequestParam Long customerId,
-                                   @RequestParam String deliveryAddress,
-                                   @RequestParam(name = "priceIds") List<Long> priceIds,
-                                   @RequestParam(name = "quantities") List<Float> quantities) {
-        
-        // Tìm khách hàng
-        User customer = userService.findById(customerId).orElseThrow();
-        
-        // Khởi tạo đơn hàng
-        Order order = new Order();
-        order.setCustomer(customer);
-        order.setDeliveryAddress(deliveryAddress);
-        order.setPickupAddress(deliveryAddress); // Mặc định lấy tại địa chỉ giao
-        order.setStatus("CONFIRMED"); // Admin tạo thì xác nhận luôn
-        order.setCreatedAt(LocalDateTime.now());
-
-        // Xử lý danh sách chi tiết
-        List<OrderDetail> details = new ArrayList<>();
-        double totalAmount = 0;
-
-        if (priceIds != null && !priceIds.isEmpty()) {
-            for (int i = 0; i < priceIds.size(); i++) {
-                Long pId = priceIds.get(i);
-                Float qty = quantities.get(i);
-
-                // Tìm thông tin giá
-                PriceList pl = priceService.findById(pId).orElse(null);
-                if (pl != null) {
-                    OrderDetail detail = new OrderDetail();
-                    detail.setOrder(order); // Liên kết ngược (QUAN TRỌNG)
-                    detail.setPriceList(pl);
-                    detail.setQuantity(qty);
-                    detail.setUnitPrice(pl.getPrice());
-                    detail.setSubtotal(pl.getPrice() * qty);
-                    
-                    totalAmount += detail.getSubtotal();
-                    details.add(detail);
-                }
-            }
-        }
-
-        order.setOrderDetails(details);
-        order.setTotalAmount(totalAmount);
-        
-        // Lưu xuống DB
-        orderService.save(order);
-
         return "redirect:/admin/orders";
+    }
+    
+    @GetMapping("/confirm/{id}")
+    public String confirmOrder(@PathVariable("id") Long id) {
+        orderService.updateStatus(id, "CONFIRMED");
+        return "redirect:/admin/orders/detail/" + id;
+    }
+
+    @GetMapping("/cancel/{id}")
+    public String cancelOrder(@PathVariable("id") Long id) {
+        orderService.updateStatus(id, "CANCELLED");
+        return "redirect:/admin/orders/detail/" + id;
     }
 }

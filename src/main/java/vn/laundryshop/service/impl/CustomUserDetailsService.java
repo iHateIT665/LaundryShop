@@ -20,6 +20,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String phone) throws UsernameNotFoundException {
         System.out.println("--- [DEBUG] Security đang tìm user với SĐT: " + phone);
+     
         
         // Tìm user trong DB
         User user = userRepository.findByPhone(phone).orElse(null);

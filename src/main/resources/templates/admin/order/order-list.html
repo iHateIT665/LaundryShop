@@ -4,6 +4,30 @@
 <body>
     <div class="main-content">
         <h2 class="mb-4">Danh Sách Đơn Hàng</h2>
+        
+        <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
+            [[${message}]]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            [[${error}]]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-body p-3">
+                <form th:action="@{/admin/orders}" method="get" class="d-flex">
+                    <input type="text" name="keyword" th:value="${keyword}" 
+                           class="form-control me-2" placeholder="Tìm theo Mã đơn, Tên khách hàng...">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-magnifying-glass me-2"></i> Tìm
+                    </button>
+                    <a th:if="${keyword != null && keyword != ''}" th:href="@{/admin/orders}" class="btn btn-secondary ms-2">
+                        <i class="fa-solid fa-rotate-left"></i>
+                    </a>
+                </form>
+            </div>
+        </div>
 
         <div class="card shadow-sm border-0">
             <div class="card-body p-0">
@@ -15,6 +39,7 @@
                             <th>Ngày Đặt</th>
                             <th>Tổng Tiền</th>
                             <th>Trạng Thái</th>
+                            <th>Nhân Viên</th>
                             <th class="text-center">Hành Động</th>
                         </tr>
                     </thead>
@@ -44,19 +69,64 @@
                                 <span th:if="${order.status == 'COMPLETED'}" class="badge bg-success">Hoàn Thành</span>
                                 <span th:if="${order.status == 'CANCELLED'}" class="badge bg-danger">Đã Hủy</span>
                             </td>
+                            <td>
+                                <span th:if="${order.staff != null}" class="badge bg-secondary">
+                                    <i class="fas fa-user"></i> [[${order.staff.fullName}]]
+                                </span>
+                                <span th:if="${order.staff == null}" class="text-muted fst-italic">Chưa gán</span>
+                            </td>
                             <td class="text-center">
+                                <button type="button" class="btn btn-primary btn-sm mx-1" 
+                                        data-bs-toggle="modal" 
+                                        th:data-bs-target="'#assignModal-' + ${order.orderId}"
+                                        title="Giao việc">
+                                    <i class="fas fa-user-plus"></i>
+                                </button>
+                                
                                 <a th:href="@{/admin/orders/detail/{id}(id=${order.orderId})}"
                                     class="btn btn-info btn-sm mx-1 text-white" title="Xem Chi Tiết">
                                     <i class="fa-solid fa-eye"></i>
                                 </a>
-                            </td>
+                                
+                                <div class="modal fade" th:id="'assignModal-' + ${order.orderId}" tabindex="-1" aria-hidden="true">
+                                  <div class="modal-dialog text-start">
+                                    <div class="modal-content">
+                                      <form th:action="@{/admin/orders/assign}" method="post">
+                                          <div class="modal-header">
+                                            <h5 class="modal-title">Giao đơn hàng #[[${order.orderId}]]</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                          </div>
+                                          <div class="modal-body">
+                                            <input type="hidden" name="orderId" th:value="${order.orderId}">
+                                            
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold">Chọn nhân viên phụ trách:</label>
+                                                <select name="staffId" class="form-select" required>
+                                                    <option value="">-- Chọn nhân viên --</option>
+                                                    <option th:each="staff : ${staffList}" 
+                                                            th:value="${staff.userId}" 
+                                                            th:text="${staff.fullName} + ' (' + ${staff.phone} + ')'">
+                                                    </option>
+                                                </select>
+                                            </div>
+                                          </div>
+                                          <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                            <button type="submit" class="btn btn-primary">Xác nhận giao</button>
+                                          </div>
+                                      </form>
+                                    </div>
+                                  </div>
+                                </div>
+                                </td>
                         </tr>
                     </tbody>
                 </table>
+                <div th:replace="~{common/pagination :: pagination(${pageData}, '/admin/orders', ${keyword})}"></div>
             </div>
         </div>
         <div th:if="${#lists.isEmpty(orders)}" class="alert alert-info mt-3 text-center">
-            Chưa có đơn hàng nào.
+            Không tìm thấy đơn hàng nào.
         </div>
     </div>
 </body>

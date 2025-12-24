@@ -15,37 +15,47 @@
             <div class="card-body p-4">
                 <form th:action="@{/admin/users/save}" th:object="${user}" method="post" enctype="multipart/form-data">
                     <input type="hidden" th:field="*{userId}">
+                    
                     <div class="text-center mb-3">
-                        <img th:src="@{${user.avatarPath}}" style="width: 100px; height: 100px; object-fit: cover;"
-                            class="rounded-circle border">
+                        <img th:src="@{${user.avatarPath}}" style="width: 100px; height: 100px; object-fit: cover;" class="rounded-circle border">
                     </div>
+                    
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Ảnh Đại Diện</label>
+                        <label class="form-label fw-bold">Ảnh Đại Diện</label> 
                         <input type="file" name="imageFile" class="form-control" accept="image/png, image/jpeg">
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Họ và Tên</label>
-                        <input type="text" th:field="*{fullName}" class="form-control" required>
+                        <label class="form-label fw-bold">Họ và Tên</label> 
+                        <input type="text" th:field="*{fullName}" class="form-control" 
+                               th:classappend="${#fields.hasErrors('fullName')} ? 'is-invalid' : ''">
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></div>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Số Điện Thoại</label>
-                        <input type="text" th:field="*{phone}" class="form-control" required>
+                        <label class="form-label fw-bold">Số Điện Thoại</label> 
+                        <input type="text" th:field="*{phone}" class="form-control"
+                               th:classappend="${#fields.hasErrors('phone')} ? 'is-invalid' : ''">
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
                     </div>
 
-                    <div class="mb-3" th:if="${user.userId == null}">
-                        <label class="form-label fw-bold">Mật Khẩu</label>
-                        <input type="password" th:field="*{password}" class="form-control" required>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Mật Khẩu</label> 
+                        <input type="password" th:field="*{password}" class="form-control"
+                               th:classappend="${#fields.hasErrors('password')} ? 'is-invalid' : ''">
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                        <small class="form-text text-muted" th:if="${user.userId != null}">Để trống nếu không muốn đổi mật khẩu.</small>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label fw-bold">Địa Chỉ</label>
-                        <textarea th:field="*{address}" class="form-control" rows="2"></textarea>
+                        <textarea th:field="*{address}" class="form-control" rows="2"
+                                  th:classappend="${#fields.hasErrors('address')} ? 'is-invalid' : ''"></textarea>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></div>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Vai Trò</label>
+                        <label class="form-label fw-bold">Vai Trò</label> 
                         <select th:field="*{role}" class="form-select">
                             <option value="CLIENT">Khách Hàng</option>
                             <option value="STAFF">Nhân Viên</option>

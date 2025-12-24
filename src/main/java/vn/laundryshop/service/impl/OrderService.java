@@ -1,12 +1,16 @@
 package vn.laundryshop.service.impl;
 
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import vn.laundryshop.entity.Order;
+import vn.laundryshop.entity.User;
 import vn.laundryshop.repository.IOrderRepository;
+import vn.laundryshop.repository.IUserRepository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -14,9 +18,16 @@ import java.util.Optional;
 public class OrderService {
 
     private final IOrderRepository orderRepo;
+    private final IUserRepository userRepo;
 
-    public List<Order> getAllOrders() {
-        return orderRepo.findAllByOrderByCreatedAtDesc();
+    // --- SỬA HÀM NÀY ĐỂ PHÂN TRANG ---
+    public Page<Order> getAllOrders(int pageNo) {
+        // Sắp xếp giảm dần theo ngày tạo (mới nhất lên đầu)
+        // 5 phần tử / trang
+        Pageable pageable = PageRequest.of(pageNo, 5, Sort.by("createdAt").descending());
+        
+        // Gọi hàm findAll có sẵn của JpaRepository
+        return orderRepo.findAll(pageable);
     }
 
     public Optional<Order> findOrderById(Long id) {
@@ -32,7 +43,18 @@ public class OrderService {
         }
     }
     
-    // Hàm lưu đơn hàng (dùng cho cập nhật shipper,...)
+    // Hàm giao việc cho nhân viên
+    public void assignStaff(Long orderId, Long staffId) {
+        Order order = orderRepo.findById(orderId).orElse(null);
+        User staff = userRepo.findById(staffId).orElse(null);
+        
+        if (order != null && staff != null) {
+            order.setStaff(staff);
+            order.setStatus("CONFIRMED"); // Giao xong thì tự động chuyển trạng thái đã duyệt
+            orderRepo.save(order);
+        }
+    }
+    
     public void save(Order order) {
         orderRepo.save(order);
     }

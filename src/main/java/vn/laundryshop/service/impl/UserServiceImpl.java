@@ -1,7 +1,12 @@
 package vn.laundryshop.service.impl;
 
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import vn.laundryshop.entity.User;
 import vn.laundryshop.repository.IUserRepository;
@@ -16,33 +21,37 @@ public class UserServiceImpl implements IUserService {
 
     private final IUserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+  
+    public Page<User> searchUsers(String keyword, int pageNo) {
+        Pageable pageable = PageRequest.of(pageNo, 5);
+        return userRepository.findByIsActiveTrueAndFullNameContainingOrPhoneContainingOrAddressContaining(
+            keyword, keyword, keyword, pageable);
+    }
 
     @Override
     public User save(User user) {
         // 1. Xử lý khi tạo mới (userId == null)
         if (user.getUserId() == null) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
+            user.setIsActive(true); // <--- Mặc định kích hoạt khi tạo mới
         } else {
             // 2. Xử lý khi cập nhật (userId != null)
             User existingUser = userRepository.findById(user.getUserId()).get();
             
-            // Nếu mật khẩu từ form gửi về bị trống hoặc null -> Giữ pass cũ
+            // Xử lý mật khẩu
             if (user.getPassword() == null || user.getPassword().trim().isEmpty()) {
                 user.setPassword(existingUser.getPassword());
             } else {
-                // Có nhập pass mới -> Mã hóa và lưu
                 user.setPassword(passwordEncoder.encode(user.getPassword()));
             }
+            
+            // Lưu ý: Khi update, ta tôn trọng giá trị isActive mà user gửi lên
+            // (không cần code set true/false mặc định ở đây nữa)
         }
 
-        // Mặc định vai trò
+        // Mặc định vai trò nếu thiếu
         if (user.getRole() == null || user.getRole().trim().isEmpty()) {
             user.setRole("CLIENT");
-        }
-        
-        // Mặc định active
-        if (user.getIsActive() == null) {
-            user.setIsActive(true);
         }
         
         return userRepository.save(user);
@@ -53,11 +62,12 @@ public class UserServiceImpl implements IUserService {
         return userRepository.findByPhone(phone);
     }
 
-    // --- ĐÃ SỬA ĐOẠN NÀY ---
+
     @Override
-    public List<User> getAllUsers() {
-        // Chỉ lấy những user có isActive = true (ẩn những người đã bị xóa/block)
-        return userRepository.findByIsActiveTrue(); 
+    public Page<User> getAllUsers(int pageNo) {
+        // Tạo PageRequest: trang số pageNo, mỗi trang 5 phần tử
+        Pageable pageable = PageRequest.of(pageNo, 5);
+        return userRepository.findByIsActiveTrue(pageable);
     }
     // -----------------------
 
@@ -75,4 +85,33 @@ public class UserServiceImpl implements IUserService {
             userRepository.save(user);
         }
     }
+ // 1. Hàm cập nhật token
+    public void updateResetPasswordToken(String token, String email) throws Exception {
+        // Sửa userRepo -> userRepository
+        User user = userRepository.findByEmail(email); 
+        if (user != null) {
+            user.setResetPasswordToken(token);
+            userRepository.save(user); 
+        } else {
+            throw new Exception("Không tìm thấy khách hàng với email: " + email);
+        }
+    }
+
+    // 2. Hàm lấy user từ token
+    public User getByResetPasswordToken(String token) {
+        // Sửa userRepo -> userRepository
+        return userRepository.findByResetPasswordToken(token);
+    }
+
+    // 3. Hàm cập nhật mật khẩu mới (QUAN TRỌNG NHẤT)
+ // Trong UserServiceImpl.java
+    public void updatePassword(User user, String newPassword) {
+        // Dùng biến đã inject, KHÔNG new BCryptPasswordEncoder()
+        String encodedPassword = passwordEncoder.encode(newPassword); 
+        user.setPassword(encodedPassword);
+        user.setResetPasswordToken(null);
+        userRepository.save(user);
+    }
+
+
 }

@@ -1,89 +1,51 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="UTF-8">
-<title>Đăng Ký Tài Khoản</title>
-<link
-	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-	rel="stylesheet">
+    <meta charset="UTF-8">
+    <title>Đăng Ký Tài Khoản</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body class="bg-light">
+<body class="bg-light d-flex align-items-center justify-content-center" style="min-height: 100vh;">
 
-	<div class="container mt-5">
-		<div class="row justify-content-center">
-			<div class="col-md-6">
-				<div class="card shadow">
-					<div class="card-header bg-primary text-white text-center">
-						<h3>ĐĂNG KÝ THÀNH VIÊN</h3>
-					</div>
-					<div class="card-body p-4">
+    <div class="card shadow-lg p-4" style="width: 100%; max-width: 500px;">
+        <h3 class="text-center text-primary mb-4 fw-bold">ĐĂNG KÝ THÀNH VIÊN</h3>
+        
+        <form th:action="@{/register}" th:object="${user}" method="post">
+            
+            <div class="mb-3">
+                <label class="form-label fw-bold">Họ và Tên</label>
+                <input type="text" th:field="*{fullName}" class="form-control" 
+                       th:classappend="${#fields.hasErrors('fullName')} ? 'is-invalid' : ''">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></div>
+            </div>
 
-						<div th:if="${error}" class="alert alert-danger" role="alert">
-							<span th:text="${error}"></span>
-						</div>
+            <div class="mb-3">
+                <label class="form-label fw-bold">Số điện thoại</label>
+                <input type="text" th:field="*{phone}" class="form-control"
+                       th:classappend="${#fields.hasErrors('phone')} ? 'is-invalid' : ''">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+            </div>
 
-						<form th:action="@{/register}" th:object="${user}" method="post">
+            <div class="mb-3">
+                <label class="form-label fw-bold">Mật khẩu</label>
+                <input type="password" th:field="*{password}" class="form-control"
+                       th:classappend="${#fields.hasErrors('password')} ? 'is-invalid' : ''">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+            </div>
 
-							<div class="mb-3">
-								<label class="form-label">Họ và Tên</label> <input type="text"
-									th:field="*{fullName}" class="form-control" required
-									placeholder="Nhập họ tên đầy đủ">
-							</div>
+            <div class="mb-3">
+                <label class="form-label fw-bold">Địa chỉ</label>
+                <textarea th:field="*{address}" class="form-control" rows="2"
+                          th:classappend="${#fields.hasErrors('address')} ? 'is-invalid' : ''"></textarea>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></div>
+            </div>
 
-							<div class="mb-3">
-								<label class="form-label">Số điện thoại (Dùng để đăng
-									nhập)</label> <input type="text" th:field="*{phone}"
-									class="form-control" required placeholder="Nhập SĐT của bạn">
-							</div>
-
-							<div class="mb-3">
-								<label class="form-label">Mật khẩu</label>
-								<div class="input-group">
-									<input type="password" th:field="*{password}"
-										class="form-control" id="registerPassword" required
-										placeholder="Nhập mật khẩu"> <span
-										class="input-group-text"
-										onclick="togglePassword('registerPassword', 'registerIcon')"
-										style="cursor: pointer;"> <i class="fa-solid fa-eye"
-										id="registerIcon"></i>
-									</span>
-								</div>
-							</div>
-
-							<script>
-    function togglePassword(inputId, iconId) {
-        const passwordInput = document.getElementById(inputId);
-        const icon = document.getElementById(iconId);
-
-        if (passwordInput.type === "password") {
-            passwordInput.type = "text";
-            icon.classList.remove("fa-eye");
-            icon.classList.add("fa-eye-slash");
-        } else {
-            passwordInput.type = "password";
-            icon.classList.remove("fa-eye-slash");
-            icon.classList.add("fa-eye");
-        }
-    }
-</script>
-
-							<div class="mb-3">
-								<label class="form-label">Địa chỉ</label>
-								<textarea th:field="*{address}" class="form-control" rows="2"
-									placeholder="Địa chỉ nhận/giao đồ"></textarea>
-							</div>
-
-							<button type="submit" class="btn btn-primary w-100">Đăng
-								Ký Ngay</button>
-						</form>
-					</div>
-					<div class="card-footer text-center">
-						Đã có tài khoản? <a th:href="@{/login}">Đăng nhập tại đây</a>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary btn-lg">Đăng Ký</button>
+                <a th:href="@{/login}" class="btn btn-link text-decoration-none">Đã có tài khoản? Đăng nhập ngay</a>
+            </div>
+        </form>
+    </div>
 
 </body>
 </html>

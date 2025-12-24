@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{common/head :: head(${laundryService.serviceId == null ? 'Thêm Dịch Vụ' : 'Cập Nhật Dịch Vụ'})}"></head>
+
+<body>
+<div class="d-flex" style="min-height: 100vh;">
+    
+    <div th:replace="~{admin/fragments/sidebar :: sidebar('services')}"></div>
+
+    <div class="d-flex flex-column flex-grow-1">
+        <div th:replace="~{admin/fragments/header :: header}"></div>
+
+        <div class="container-fluid p-4 bg-light flex-grow-1">
+            <div class="card shadow-sm border-0" style="max-width: 800px; margin: 0 auto;">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold text-primary">
+                        <i class="fa-solid fa-jug-detergent me-2"></i>
+                        <span th:text="${laundryService.serviceId == null ? 'Thêm Dịch Vụ Mới' : 'Cập Nhật Dịch Vụ'}"></span>
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form th:action="@{/admin/services/save}" th:object="${laundryService}" method="post" enctype="multipart/form-data">
+                        
+                        <input type="hidden" th:field="*{serviceId}">
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Tên Dịch Vụ <span class="text-danger">*</span></label>
+                            <input type="text" th:field="*{serviceName}" class="form-control"
+                                   th:classappend="${#fields.hasErrors('serviceName')} ? 'is-invalid' : ''"
+                                   placeholder="Ví dụ: Giặt Sấy, Giặt Hấp...">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('serviceName')}" th:errors="*{serviceName}"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Mô Tả</label>
+                            <textarea th:field="*{description}" class="form-control" rows="4"
+                                      th:classappend="${#fields.hasErrors('description')} ? 'is-invalid' : ''"
+                                      placeholder="Mô tả chi tiết về dịch vụ này..."></textarea>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Hình Ảnh Minh Họa</label>
+                            <div class="d-flex align-items-center">
+                                <div class="me-3">
+                                    <img id="imgPreview" th:src="@{${laundryService.imagePath}}" 
+                                         class="rounded border shadow-sm" 
+                                         style="width: 120px; height: 120px; object-fit: cover;">
+                                </div>
+                                <div class="flex-grow-1">
+                                    <input type="file" name="imageFile" class="form-control" 
+                                           accept="image/png, image/jpeg, image/webp" 
+                                           onchange="previewImage(this)">
+                                    <div class="form-text mt-2">Chấp nhận file ảnh: .png, .jpg, .webp</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <hr>
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <a th:href="@{/admin/services}" class="btn btn-secondary">
+                                <i class="fa-solid fa-arrow-left me-2"></i> Quay lại
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fa-solid fa-save me-2"></i> Lưu Lại
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div th:replace="~{admin/fragments/footer :: footer}"></div>
+    </div>
+</div>
+
+<div th:replace="~{common/scripts :: scripts}"></div>
+
+</body>
+</html>

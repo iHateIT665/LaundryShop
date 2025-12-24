@@ -1,6 +1,8 @@
 package vn.laundryshop.controller.admin;
 
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -21,18 +23,19 @@ public class PriceController {
     private final IPriceListRepository priceRepo; // Inject thêm Repo
     private final ILaundryServiceService serviceLaundry;
     private final ClothingTypeService typeService;
-
+    
     @GetMapping
-    public String listPrices(@RequestParam(required = false) String keyword, Model model) {
-        List<PriceList> prices;
+    public String listPrices(Model model,
+                             @RequestParam(defaultValue = "0") int page,
+                             @RequestParam(required = false) String keyword) {
         
-        if (keyword != null && !keyword.isEmpty()) {
-            prices = priceRepo.searchPrices(keyword);
-        } else {
-            prices = priceService.getAllPrices();
-        }
+        // --- SỬA: Đổi 10 thành 3 để test phân trang (vì data mẫu chỉ có 6 dòng) ---
+        Page<PriceList> pageResult = priceService.getPricesWithPaging(page, 5, keyword);
+
+        model.addAttribute("prices", pageResult.getContent());
+        model.addAttribute("pageData", pageResult);
+        model.addAttribute("keyword", keyword);
         
-        model.addAttribute("prices", prices);
         return "admin/price/price-list";
     }
 

@@ -4,9 +4,23 @@
 <body>
     <div class="main-content">
         <h2 class="mb-4">Danh Sách Loại Đồ Giặt</h2>
-        <a th:href="@{/admin/types/add}" class="btn btn-primary mb-3 shadow-sm">
-            <i class="fa-solid fa-plus-circle"></i> Thêm Loại Đồ Mới
-        </a>
+        
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <a th:href="@{/admin/types/add}" class="btn btn-primary shadow-sm">
+                <i class="fa-solid fa-plus-circle me-2"></i> Thêm Loại Đồ
+            </a>
+
+            <form th:action="@{/admin/types}" method="get" class="d-flex" style="max-width: 400px;">
+                <input type="text" name="keyword" th:value="${keyword}" 
+                       class="form-control me-2" placeholder="Tìm tên loại đồ...">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+                <a th:if="${keyword != null && keyword != ''}" th:href="@{/admin/types}" class="btn btn-secondary ms-2">
+                    <i class="fa-solid fa-rotate-left"></i>
+                </a>
+            </form>
+        </div>
 
         <div class="card shadow-sm border-0">
             <div class="card-body p-0">
@@ -37,13 +51,16 @@
                                     class="btn btn-warning btn-sm mx-1"><i class="fa-solid fa-pen"></i></a>
                                 <a th:href="@{/admin/types/delete/{id}(id=${t.typeId})}"
                                     class="btn btn-danger btn-sm mx-1"
-                                    onclick="return confirm('Bạn có chắc muốn xóa loại đồ này?');"><i
-                                        class="fa-solid fa-trash"></i></a>
+                                    onclick="return confirm('Xóa loại đồ này?');"><i class="fa-solid fa-trash"></i></a>
                             </td>
                         </tr>
                     </tbody>
                 </table>
+                <div th:replace="~{common/pagination :: pagination(${pageData}, '/admin/types', ${keyword})}"></div>
             </div>
+        </div>
+        <div th:if="${#lists.isEmpty(types)}" class="alert alert-info mt-3 text-center">
+            Không tìm thấy loại đồ nào.
         </div>
     </div>
 </body>

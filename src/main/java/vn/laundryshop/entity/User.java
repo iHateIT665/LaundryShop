@@ -1,42 +1,56 @@
 package vn.laundryshop.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import jakarta.validation.constraints.*;
+import lombok.Data;
 
-@Data
 @Entity
 @Table(name = "users")
+@Data
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 100)
+    @NotBlank(message = "Họ và tên không được để trống")
     private String fullName;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 15)
+    @NotBlank(message = "Số điện thoại là bắt buộc")
     private String phone;
 
     @Column(nullable = false)
+    @Size(min = 6, message = "Mật khẩu phải có ít nhất 6 ký tự")
     private String password;
 
+    @Column(nullable = false)
+    @NotBlank(message = "Địa chỉ không được để trống")
     private String address;
-    private String role; // ADMIN, STAFF, CLIENT
 
-    @Column(name = "is_active")
-    private Boolean isActive = true;
+    @Column(length = 20)
+    private String role; // "ADMIN", "STAFF", "CLIENT"
 
-    // --- MỚI: Cột lưu tên ảnh đại diện ---
-    @Column(length = 64)
+    @Column(nullable = true, length = 64)
     private String avatar;
 
-    // --- MỚI: Hàm lấy đường dẫn ảnh để hiển thị ---
+    // --- SỬA LẠI ĐOẠN NÀY ---
+    // Thay vì biến 'enabled', dùng 'isActive' để khớp với code Repository
+    @Column(name = "is_active")
+    private Boolean isActive = true; 
+    // ------------------------
+
     @Transient
     public String getAvatarPath() {
-        // Nếu chưa có ảnh, trả về ảnh mặc định (bạn nên có file này trong static/images)
         if (avatar == null || userId == null) return "/images/default-user.png";
-        
-        // Trả về đường dẫn: /uploads/user-photos/{id}/{avatar}
         return "/uploads/user-photos/" + userId + "/" + avatar;
     }
+
+
+    @Column(unique = true, length = 150)
+    private String email;
+
+    @Column(name = "reset_password_token")
+    private String resetPasswordToken;
 }

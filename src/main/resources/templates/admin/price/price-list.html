@@ -10,9 +10,12 @@
                 <form th:action="@{/admin/prices}" method="get" class="row g-3">
                     <div class="col-md-9">
                         <div class="input-group">
-                            <span class="input-group-text bg-white"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+                            <span class="input-group-text bg-white">
+                                <i class="fa-solid fa-magnifying-glass text-muted"></i>
+                            </span> 
                             <input type="text" name="keyword" class="form-control border-start-0"
-                                placeholder="Nhập tên dịch vụ hoặc tên đồ..." th:value="${param.keyword}">
+                                   placeholder="Nhập tên dịch vụ hoặc tên đồ..."
+                                   th:value="${param.keyword}">
                         </div>
                     </div>
                     <div class="col-md-3 d-grid">
@@ -53,19 +56,29 @@
                             <td th:text="${p.unit}"></td>
                             <td class="text-center">
                                 <a th:href="@{/admin/prices/edit/{id}(id=${p.priceId})}"
-                                    class="btn btn-warning btn-sm mx-1"><i class="fa-solid fa-pen"></i></a>
+                                   class="btn btn-warning btn-sm mx-1">
+                                    <i class="fa-solid fa-pen"></i>
+                                </a> 
                                 <a th:href="@{/admin/prices/delete/{id}(id=${p.priceId})}"
-                                    class="btn btn-danger btn-sm mx-1"
-                                    onclick="return confirm('Xóa giá này?');"><i class="fa-solid fa-trash"></i></a>
+                                   class="btn btn-danger btn-sm mx-1"
+                                   onclick="return confirm('Xóa giá này?');">
+                                    <i class="fa-solid fa-trash"></i>
+                                </a>
                             </td>
                         </tr>
                         <tr th:if="${#lists.isEmpty(prices)}">
-                            <td colspan="6" class="text-center py-4 text-muted">Không tìm thấy bảng giá nào.</td>
+                            <td colspan="6" class="text-center py-4 text-muted">
+                                Không tìm thấy bảng giá nào.
+                            </td>
                         </tr>
                     </tbody>
                 </table>
+                
+                <div class="p-3">
+                    <div th:replace="~{common/pagination :: pagination(${pageData}, '/admin/prices', ${keyword})}"></div>
+                </div>
             </div>
         </div>
-    </div>
-</body>
+
+    </div> </body>
 </html>

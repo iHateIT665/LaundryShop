@@ -1,6 +1,7 @@
 package vn.laundryshop.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 @Data
@@ -11,22 +12,23 @@ public class LaundryService {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long serviceId;
 
-    @Column(nullable = false)
-    private String serviceName; 
+    @NotBlank(message = "Tên dịch vụ không được để trống")
+    private String serviceName;
 
     private String description;
     
-    @Column(name = "is_active")
-    private Boolean isActive = true;
-
-    // --- MỚI: Cột lưu tên ảnh ---
-    @Column(nullable = true, length = 64)
     private String image;
+    
+  
 
-    // --- MỚI: Hàm lấy đường dẫn ảnh để hiển thị ---
+    // --- BỔ SUNG ACTIVE ĐỂ SOFT DELETE ---
+    @Column(name = "is_active")
+    private Boolean isActive = true; 
+    // -------------------------------------
+
     @Transient
     public String getImagePath() {
-        if (image == null || serviceId == null) return "/images/default-service.png"; // Ảnh mặc định
+        if (image == null || serviceId == null) return "/images/default-service.png";
         return "/uploads/services/" + serviceId + "/" + image;
     }
 }
