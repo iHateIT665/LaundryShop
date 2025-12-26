@@ -18,6 +18,7 @@ public interface IUserService {
  // Sửa hàm getAllUsers:
     Page<User> getAllUsers(int pageNo);
 	Page<User> searchUsers(String keyword, int page);
+	User findByEmail(String email);
 	
 
 }

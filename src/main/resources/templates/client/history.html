@@ -29,7 +29,7 @@
                                         <th>Địa Chỉ Giao</th>
                                         <th>Tổng Tiền</th>
                                         <th>Trạng Thái</th>
-                                        <th>Hành Động</th>
+                                        <th>Thanh Toán</th> <th>Hành Động</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -52,14 +52,24 @@
                                             <span th:if="${order.status == 'COMPLETED'}" class="badge bg-success">Hoàn thành</span>
                                             <span th:if="${order.status == 'CANCELLED'}" class="badge bg-secondary">Đã hủy</span>
                                         </td>
+                                        
+                                        <td>
+                                            <span th:if="${order.paymentStatus == 'PAID'}" class="badge bg-success">Đã TT</span>
+                                            <span th:if="${order.paymentStatus == 'UNPAID'}" class="badge bg-light text-dark border">Chưa TT</span>
+                                        </td>
 
                                         <td>
-                                            <a th:href="@{/client/history/{id}(id=${order.orderId})}" class="btn btn-sm btn-outline-primary">
+                                            <a th:href="@{/client/history/{id}(id=${order.orderId})}" class="btn btn-sm btn-outline-primary mb-1">
                                                 <i class="fa-solid fa-eye"></i> Xem
                                             </a>
+                                            
+                                            <a th:href="@{/complaint/create(orderId=${order.orderId})}" class="btn btn-sm btn-outline-warning mb-1">
+                                                <i class="fa-solid fa-exclamation-triangle"></i> Khiếu nại
+                                            </a>
+
                                             <a th:if="${order.status == 'PENDING'}" 
                                                th:href="@{/client/history/cancel/{id}(id=${order.orderId})}"
-                                               class="btn btn-sm btn-outline-danger"
+                                               class="btn btn-sm btn-outline-danger mb-1"
                                                onclick="return confirm('Bạn chắc chắn muốn hủy đơn này?');">
                                                 <i class="fa-solid fa-trash"></i> Hủy
                                             </a>

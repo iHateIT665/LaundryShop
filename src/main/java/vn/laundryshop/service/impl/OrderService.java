@@ -11,6 +11,7 @@ import vn.laundryshop.entity.User;
 import vn.laundryshop.repository.IOrderRepository;
 import vn.laundryshop.repository.IUserRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -20,15 +21,7 @@ public class OrderService {
     private final IOrderRepository orderRepo;
     private final IUserRepository userRepo;
 
-    // --- SỬA HÀM NÀY ĐỂ PHÂN TRANG ---
-    public Page<Order> getAllOrders(int pageNo) {
-        // Sắp xếp giảm dần theo ngày tạo (mới nhất lên đầu)
-        // 5 phần tử / trang
-        Pageable pageable = PageRequest.of(pageNo, 5, Sort.by("createdAt").descending());
-        
-        // Gọi hàm findAll có sẵn của JpaRepository
-        return orderRepo.findAll(pageable);
-    }
+
 
     public Optional<Order> findOrderById(Long id) {
         return orderRepo.findById(id);
@@ -58,4 +51,18 @@ public class OrderService {
     public void save(Order order) {
         orderRepo.save(order);
     }
+    public Page<Order> getAllOrders(int pageNo, String keyword) {
+        // Sắp xếp giảm dần theo ngày tạo
+        Pageable pageable = PageRequest.of(pageNo, 5, Sort.by("createdAt").descending());
+        
+        if (keyword != null && !keyword.isEmpty()) {
+            // Nếu có từ khóa -> Gọi hàm search đã sửa ở Repo
+            return orderRepo.searchOrders(keyword, pageable);
+        }
+        
+        // Nếu không có từ khóa -> Lấy tất cả
+        return orderRepo.findAll(pageable);
+    }
+   
+   
 }

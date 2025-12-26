@@ -37,6 +37,13 @@
                     <i class="fa-solid fa-receipt me-2"></i> Quản Lý Đơn Hàng
                 </a>
             </li>
+            
+            <li>
+                <a th:href="@{/admin/complaints}" class="nav-link text-white" th:classappend="${activeItem == 'complaints'} ? 'active' : ''">
+                    <i class="fa-solid fa-comments me-2"></i> Quản Lý Khiếu Nại
+                </a>
+            </li>
+
         </ul>
         <hr>
     </div>

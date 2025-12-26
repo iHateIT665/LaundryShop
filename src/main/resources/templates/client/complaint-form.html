@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Gửi khiếu nại</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div th:replace="~{client/fragments/navbar :: navbar}"></div>
+
+    <div class="container mt-5" style="max-width: 600px;">
+        <h2 class="text-center mb-4">Gửi khiếu nại / Góp ý</h2>
+        <form th:action="@{/complaint/save}" method="post" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label>Tiêu đề</label>
+                <input type="text" name="title" class="form-control" required placeholder="Ví dụ: Đơn hàng giao trễ...">
+            </div>
+            <div class="mb-3">
+                <label>Nội dung chi tiết</label>
+                <textarea name="content" class="form-control" rows="5" required></textarea>
+            </div>
+            <div class="mb-3">
+                <label>Hình ảnh đính kèm (nếu có)</label>
+                <input type="file" name="imageFile" class="form-control" accept="image/png, image/jpeg">
+            </div>
+            <button type="submit" class="btn btn-danger w-100">Gửi Khiếu Nại</button>
+            <a href="/complaint/history" class="btn btn-secondary w-100 mt-2">Quay lại</a>
+        </form>
+    </div>
+</body>
+</html>

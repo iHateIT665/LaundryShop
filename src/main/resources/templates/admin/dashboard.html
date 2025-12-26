@@ -1,65 +1,189 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" 
-      th:replace="~{admin/layout :: layout(~{:: .main-content}, 'dashboard', 'Tổng Quan')}">
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{admin/layout :: layout(~{:: #main-content}, 'dashboard', 'Thống Kê')}">
+<head>
+    <title>Thống Kê</title>
+</head>
 <body>
-    <div class="main-content">
-        <h2 class="mb-4 fw-bold">Tổng Quan Hệ Thống</h2>
 
-        <div class="row g-4 mb-4">
-            <div class="col-md-3">
-                <div class="card shadow-sm border-0 border-start border-success border-4 h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="text-muted text-uppercase mb-1">Doanh Thu Thực Tế</h6>
-                                <h3 class="fw-bold text-success mb-0" th:text="${#numbers.formatDecimal(revenue, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</h3>
+    <div id="main-content">
+        <div class="container-fluid">
+            <h1 class="h3 mb-4 text-gray-800 fw-bold">Tổng Quan Hệ Thống</h1>
+
+            <div class="row mb-4">
+                <div class="col-xl-4 col-md-6 mb-4">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Tổng Doanh Thu</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800" 
+                                         th:text="${#numbers.formatDecimal(totalRevenue, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</div>
+                                </div>
+                                <div class="col-auto"><i class="fas fa-calendar fa-2x text-gray-300"></i></div>
                             </div>
-                            <div class="bg-success bg-opacity-10 p-3 rounded-circle">
-                                <i class="fa-solid fa-sack-dollar fa-2x text-success"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-4 col-md-6 mb-4">
+                    <div class="card border-left-success shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Tổng Đơn Hàng</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${totalOrders}">0</div>
+                                </div>
+                                <div class="col-auto"><i class="fas fa-clipboard-list fa-2x text-gray-300"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-4 col-md-6 mb-4">
+                    <div class="card border-left-warning shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Khách Hàng</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${totalUsers}">0</div>
+                                </div>
+                                <div class="col-auto"><i class="fas fa-users fa-2x text-gray-300"></i></div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card shadow-sm border-0 border-start border-primary border-4 h-100">
-                    <div class="card-body">
-                         <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="text-muted text-uppercase mb-1">Tổng Đơn Hàng</h6>
-                                <h3 class="fw-bold text-primary mb-0" th:text="${totalOrders}">0</h3>
+
+            <div class="row">
+                <div class="col-xl-8 col-lg-7">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Doanh Thu 7 Ngày Gần Nhất</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-area" style="height: 320px;"> <canvas id="myAreaChart"></canvas>
                             </div>
-                            <div class="bg-primary bg-opacity-10 p-3 rounded-circle"><i class="fa-solid fa-receipt fa-2x text-primary"></i></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-4 col-lg-5">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Dịch Vụ Phổ Biến</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-pie pt-4 pb-2" style="height: 250px;">
+                                <canvas id="myPieChart"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                 <div class="card shadow-sm border-0 border-start border-warning border-4 h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div><h6 class="text-muted text-uppercase mb-1">Đơn Chờ Xử Lý</h6><h3 class="fw-bold text-warning mb-0" th:text="${pendingOrders}">0</h3></div>
-                            <div class="bg-warning bg-opacity-10 p-3 rounded-circle"><i class="fa-solid fa-bell fa-2x text-warning"></i></div>
+            
+            <div class="row">
+                 <div class="col-12">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Doanh Thu Theo Tháng (Năm Nay)</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-bar" style="height: 320px;">
+                                <canvas id="myBarChart"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                 <div class="card shadow-sm border-0 border-start border-info border-4 h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div><h6 class="text-muted text-uppercase mb-1">Khách Hàng</h6><h3 class="fw-bold text-info mb-0" th:text="${totalCustomers}">0</h3></div>
-                            <div class="bg-info bg-opacity-10 p-3 rounded-circle"><i class="fa-solid fa-users fa-2x text-info"></i></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+
         </div>
 
-        <div class="card shadow-sm border-0">
-            <div class="card-header bg-white py-3"><h5 class="mb-0 fw-bold">Thông Báo Hệ Thống</h5></div>
-            <div class="card-body"><p class="text-muted">Hệ thống đang hoạt động ổn định. Chưa có cảnh báo nào.</p></div>
-        </div>
-    </div>
-</body>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        
+        <script th:inline="javascript">
+            // Lấy dữ liệu từ Controller
+            var dateLabels = /*[[${chartDateLabels}]]*/ [];
+            var dateValues = /*[[${chartDateValues}]]*/ [];
+            
+            var serviceLabels = /*[[${chartServiceLabels}]]*/ [];
+            var serviceValues = /*[[${chartServiceValues}]]*/ [];
+            
+            var monthLabels = /*[[${chartMonthLabels}]]*/ [];
+            var monthValues = /*[[${chartMonthValues}]]*/ [];
+
+            // 1. Biểu đồ Đường (Area Chart)
+            var ctx = document.getElementById("myAreaChart");
+            if (ctx) {
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: dateLabels,
+                        datasets: [{
+                            label: "Doanh thu",
+                            lineTension: 0.3,
+                            backgroundColor: "rgba(78, 115, 223, 0.05)",
+                            borderColor: "rgba(78, 115, 223, 1)",
+                            pointRadius: 3,
+                            pointBackgroundColor: "rgba(78, 115, 223, 1)",
+                            pointBorderColor: "rgba(78, 115, 223, 1)",
+                            pointHoverRadius: 3,
+                            pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
+                            pointHoverBorderColor: "rgba(78, 115, 223, 1)",
+                            pointHitRadius: 10,
+                            pointBorderWidth: 2,
+                            data: dateValues,
+                        }],
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                        scales: { y: { beginAtZero: true } }
+                    }
+                });
+            }
+
+            // 2. Biểu đồ Tròn (Pie Chart)
+            var ctxPie = document.getElementById("myPieChart");
+            if (ctxPie) {
+                new Chart(ctxPie, {
+                    type: 'doughnut',
+                    data: {
+                        labels: serviceLabels,
+                        datasets: [{
+                            data: serviceValues,
+                            backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b'],
+                            hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf', '#dda20a', '#be2617'],
+                            hoverBorderColor: "rgba(234, 236, 244, 1)",
+                        }],
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                        cutout: '70%',
+                    },
+                });
+            }
+
+            // 3. Biểu đồ Cột (Bar Chart)
+            var ctxBar = document.getElementById("myBarChart");
+            if (ctxBar) {
+                new Chart(ctxBar, {
+                    type: 'bar',
+                    data: {
+                        labels: monthLabels,
+                        datasets: [{
+                            label: "Doanh thu",
+                            backgroundColor: "#4e73df",
+                            hoverBackgroundColor: "#2e59d9",
+                            borderColor: "#4e73df",
+                            data: monthValues,
+                        }],
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                        scales: { y: { beginAtZero: true } }
+                    }
+                });
+            }
+        </script>
+    </div> </body>
 </html>

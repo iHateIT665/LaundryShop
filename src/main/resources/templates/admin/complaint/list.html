@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{admin/layout :: layout(~{:: #main-content}, 'complaints', 'Quản Lý Khiếu Nại')}">
+<body>
+    <div id="main-content">
+        <div class="container-fluid">
+            <h1 class="h3 mb-4 text-gray-800">Danh Sách Khiếu Nại</h1>
+            
+            <div class="card shadow mb-4">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover" width="100%" cellspacing="0">
+                            <thead class="bg-light text-dark">
+                                <tr>
+                                    <th width="5%">ID</th>
+                                    <th width="20%">Khách hàng</th>
+                                    <th>Tiêu đề / Nội dung</th>
+                                    <th width="10%">Ảnh</th>
+                                    <th width="10%">Trạng thái</th>
+                                    <th width="10%">Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="c : ${complaints}">
+                                    <td th:text="${c.complaintId}" class="align-middle text-center"></td>
+                                    <td class="align-middle">
+                                        <div class="font-weight-bold text-primary" th:text="${c.user.fullName}"></div>
+                                        <small class="text-muted"><i class="fas fa-phone fa-sm"></i> [[${c.user.phone}]]</small>
+                                        <div th:if="${c.user.email}" class="small text-muted">
+                                            <i class="fas fa-envelope fa-sm"></i> [[${c.user.email}]]
+                                        </div>
+                                    </td>
+                                    <td class="align-middle">
+                                        <div class="font-weight-bold mb-1" th:text="${c.title}"></div>
+                                        <div class="small text-secondary bg-light p-2 rounded" th:text="${c.content}"></div>
+                                        
+                                        <div th:if="${c.order != null}" class="mt-2">
+                                            <a th:href="@{'/admin/orders/detail/' + ${c.order.orderId}}" class="badge badge-info bg-info text-white">
+                                                <i class="fas fa-receipt"></i> Đơn #[[${c.order.orderId}]]
+                                            </a>
+                                        </div>
+                                    </td>
+                                    <td class="align-middle text-center">
+                                        <a th:if="${c.image != null}" th:href="@{${c.getImagePath()}}" target="_blank">
+                                            <img th:src="@{${c.getImagePath()}}" style="height: 60px; width: auto; border-radius: 5px; border: 1px solid #ddd;"/>
+                                        </a>
+                                        <span th:if="${c.image == null}" class="text-muted small">Không có</span>
+                                    </td>
+                                    <td class="align-middle text-center">
+                                        <span th:if="${c.status == 'PENDING'}" class="badge badge-warning bg-warning text-dark px-2 py-1">
+                                            <i class="fas fa-clock"></i> Chờ xử lý
+                                        </span>
+                                        <span th:if="${c.status == 'RESPONDED'}" class="badge badge-success bg-success text-white px-2 py-1">
+                                            <i class="fas fa-check-circle"></i> Đã trả lời
+                                        </span>
+                                    </td>
+                                    <td class="align-middle text-center">
+                                        <button type="button" class="btn btn-primary btn-sm shadow-sm" 
+                                                data-toggle="modal" data-bs-toggle="modal"
+                                                th:data-target="'#modalReply' + ${c.complaintId}"
+                                                th:data-bs-target="'#modalReply' + ${c.complaintId}"
+                                                th:if="${c.status == 'PENDING'}">
+                                            <i class="fas fa-reply"></i> Phản hồi
+                                        </button>
+                                        
+                                        <div th:if="${c.status == 'RESPONDED'}" class="text-success small">
+                                            <i class="fas fa-check"></i> Hoàn tất
+                                        </div>
+                                        
+                                        <div class="modal fade" th:id="'modalReply' + ${c.complaintId}" tabindex="-1" role="dialog" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                                <div class="modal-content">
+                                                    <form th:action="@{/admin/complaints/respond}" method="post">
+                                                        <div class="modal-header bg-primary text-white">
+                                                            <h5 class="modal-title font-weight-bold">Phản hồi khách hàng</h5>
+                                                            <button type="button" class="close text-white" data-dismiss="modal" data-bs-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body text-left">
+                                                            <input type="hidden" name="id" th:value="${c.complaintId}">
+                                                            <div class="form-group mb-3">
+                                                                <label class="font-weight-bold small text-uppercase text-secondary">Nội dung khiếu nại:</label>
+                                                                <div class="p-3 bg-light border rounded text-danger" th:text="${c.content}"></div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label class="font-weight-bold small text-uppercase text-secondary">Câu trả lời của Shop:</label>
+                                                                <textarea name="response" class="form-control" rows="5" required placeholder="Nhập câu trả lời giải quyết vấn đề..."></textarea>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer bg-light">
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal" data-bs-dismiss="modal">Hủy bỏ</button>
+                                                            <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane mr-1"></i> Gửi phản hồi</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div th:if="${complaints.isEmpty()}" class="text-center py-5 text-muted">
+                        <i class="fas fa-inbox fa-3x mb-3 text-gray-300"></i>
+                        <p>Hiện chưa có khiếu nại nào.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

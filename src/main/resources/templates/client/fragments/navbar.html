@@ -8,6 +8,10 @@
             <div class="ms-auto d-flex align-items-center">
                 <a th:href="@{/home}" class="btn btn-outline-light me-2 border-0"><i class="fa-solid fa-house"></i> Trang Chủ</a>
                 
+                <a th:href="@{/complaint/history}" class="btn btn-outline-light me-2 border-0">
+                    <i class="fa-solid fa-comments"></i> Khiếu nại
+                </a>
+                
                 <a th:href="@{/client/cart}" class="btn btn-warning position-relative me-2 fw-bold text-dark">
                     <i class="fa-solid fa-cart-shopping"></i> Giỏ Hàng
                     <span th:if="${session.cart != null and !session.cart.isEmpty()}" class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
@@ -22,6 +26,7 @@
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end shadow border-0">
                         <li><a class="dropdown-item" th:href="@{/client/history}"><i class="fa-solid fa-receipt me-2 text-primary"></i>Lịch sử đơn hàng</a></li>
+                        <li><a class="dropdown-item" th:href="@{/complaint/history}"><i class="fa-solid fa-comments me-2 text-primary"></i>Lịch sử khiếu nại</a></li>
                         <li><a class="dropdown-item" th:href="@{/profile}"><i class="fa-solid fa-user-pen me-2 text-primary"></i>Cập nhật hồ sơ</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item text-danger" th:href="@{/logout}"><i class="fa-solid fa-right-from-bracket me-2"></i>Đăng xuất</a></li>

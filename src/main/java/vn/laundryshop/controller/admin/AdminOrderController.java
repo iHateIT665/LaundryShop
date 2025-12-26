@@ -25,21 +25,21 @@ public class AdminOrderController {
 
     // --- SỬA HÀM LIST ORDERS ---
     @GetMapping
-    public String listOrders(Model model, @RequestParam(name = "page", defaultValue = "0") int page) {
-        // Gọi hàm phân trang từ Service
-        Page<Order> orderPage = orderService.getAllOrders(page);
+    public String listOrders(Model model, 
+                             @RequestParam(name = "page", defaultValue = "0") int page,
+                             @RequestParam(name = "keyword", required = false) String keyword) { // Thêm nhận keyword
         
-        // Gửi danh sách đơn hàng của trang hiện tại sang View
+        // Gọi service kèm keyword
+        Page<Order> orderPage = orderService.getAllOrders(page, keyword);
+        
         model.addAttribute("orders", orderPage.getContent());
-        
-        // Gửi thông tin trang (để vẽ nút phân trang) sang View
         model.addAttribute("pageData", orderPage);
         
-        // Lấy danh sách STAFF để dùng cho Popup giao việc (ở danh sách)
+        // Quan trọng: Gửi lại keyword ra view để giữ lại nội dung trong ô tìm kiếm và link phân trang
+        model.addAttribute("keyword", keyword);
+        
         List<User> staffList = userRepository.findByRole("STAFF");
         model.addAttribute("staffList", staffList);
-        
-        // Truyền biến 'module' để Sidebar biết đang active mục nào
         model.addAttribute("module", "orders");
         
         return "admin/order/order-list";

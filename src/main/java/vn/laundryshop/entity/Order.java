@@ -44,4 +44,7 @@ public class Order {
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderDetail> orderDetails;
+ // Trong file Order.java
+    @Column(name = "payment_status")
+    private String paymentStatus = "UNPAID"; // Mặc định là UNPAID
 }

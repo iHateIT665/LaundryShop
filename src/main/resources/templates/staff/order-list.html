@@ -22,9 +22,15 @@
                 <div class="card shadow-sm border-0 h-100">
                     <div class="card-header bg-white d-flex justify-content-between align-items-center">
                         <span class="fw-bold text-primary">#<span th:text="${o.orderId}"></span></span>
-                        <span th:text="${#temporals.format(o.createdAt, 'dd/MM HH:mm')}" class="text-muted small"></span>
+                        <div>
+                             <span th:if="${o.paymentStatus == 'PAID'}" class="badge bg-success">Đã TT</span>
+                             <span th:if="${o.paymentStatus == 'UNPAID'}" class="badge bg-warning text-dark">Chưa TT</span>
+                        </div>
                     </div>
                     <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                             <small class="text-muted" th:text="${#temporals.format(o.createdAt, 'dd/MM HH:mm')}"></small>
+                        </div>
                         <div class="mb-3">
                             <h5 class="card-title mb-1" th:text="${o.customer.fullName}"></h5>
                             <p class="card-text text-muted mb-1">
@@ -36,7 +42,10 @@
                         </div>
                         <div class="d-flex justify-content-between border-top pt-2 mb-3">
                             <span>Thu hộ (COD):</span>
-                            <span class="fw-bold text-success fs-5" th:text="${#numbers.formatDecimal(o.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' đ'"></span>
+                            <span class="fw-bold fs-5" 
+                                  th:classappend="${o.paymentStatus == 'PAID'} ? 'text-muted text-decoration-line-through' : 'text-success'"
+                                  th:text="${o.paymentStatus == 'PAID' ? '0 đ (Đã TT)' : #numbers.formatDecimal(o.totalAmount, 0, 'COMMA', 0, 'POINT') + ' đ'}">
+                            </span>
                         </div>
                         <form th:action="@{/staff/orders/update}" method="post">
                             <input type="hidden" name="orderId" th:value="${o.orderId}">

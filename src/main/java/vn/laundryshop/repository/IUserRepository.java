@@ -15,7 +15,8 @@ import java.util.Optional;
 
 @Repository
 public interface IUserRepository extends JpaRepository<User, Long> {
-    
+	
+	
     Optional<User> findByPhone(String phone);
  // Tìm kiếm theo tên, số điện thoại hoặc địa chỉ (chỉ lấy user đang hoạt động)
     Page<User> findByIsActiveTrueAndFullNameContainingOrPhoneContainingOrAddressContaining(
